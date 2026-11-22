@@ -28,8 +28,14 @@ REPO = "https://github.com/vamshith1/cafe-break-even"
 SALES, COSTS, LOSS, GAIN, EXPECTED = "#C8743A", "#7C8798", "#D9534F", "#3C9A5F", "#3C9A5F"
 
 st.set_page_config(page_title="Café Break-Even Calculator", page_icon="☕", layout="wide")
-# Five KPI cards share one row; a slightly smaller value font keeps "₹39.51 lakh" from being cut off.
-st.markdown("<style>[data-testid='stMetricValue']{font-size:1.75rem}</style>", unsafe_allow_html=True)
+# Five KPI cards share one row: use a slightly smaller value font, and let a value wrap onto a
+# second line on medium-width screens instead of being cut off with "…".
+st.markdown(
+    "<style>[data-testid='stMetricValue']{font-size:1.75rem}"
+    "[data-testid='stMetricValue'] *{white-space:normal!important;overflow:visible!important;"
+    "text-overflow:clip!important}</style>",
+    unsafe_allow_html=True,
+)
 
 
 # ------------------------------------------------------------------ formatting
@@ -50,8 +56,8 @@ def inr(x: float, decimals: int = 0) -> str:
     return f"{sign}₹{whole}" + (f".{frac}" if frac else "")
 
 
-def lakh(x: float) -> str:
-    return f"{'−' if x < 0 else ''}₹{abs(x) / 1e5:,.2f} lakh"
+def lakh(x: float, decimals: int = 2) -> str:
+    return f"{'−' if x < 0 else ''}₹{abs(x) / 1e5:,.{decimals}f} lakh"
 
 
 def pct(x: float) -> str:
@@ -178,7 +184,7 @@ else:
                f"the {lakh(inv)} investment in **month {pb}**.")
 
 k1, k2, k3, k4, k5 = st.columns(5)
-k1.metric("Total investment", lakh(inv), None if is_base else delta(inv, base["investment"], lambda d: f"₹{d / 1e5:.2f} lakh"),
+k1.metric("Total investment", lakh(inv, 1), None if is_base else delta(inv, base["investment"], lambda d: f"₹{d / 1e5:.2f} lakh"),
           delta_color="inverse", help="Everything needed to open, including the refundable deposit and a cash reserve.")
 k2.metric("Break-even", f"{per_day(be)} / day", None if is_base else delta(be, base["break_even_per_day"], lambda d: f"{d:.1f}"),
           delta_color="inverse", help="Customers needed every day to cover all monthly costs.")
