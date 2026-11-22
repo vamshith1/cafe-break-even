@@ -81,7 +81,7 @@ def delta(cur: float, base: float, fmt) -> str | None:
     d = cur - base
     if abs(d) < 1e-9:
         return None
-    return f"{'-' if d < 0 else '+'}{fmt(abs(d))} vs base"
+    return f"{'-' if d < 0 else '+'}{fmt(abs(d))}"
 
 
 # ------------------------------------------------------------------ inputs
@@ -183,6 +183,9 @@ else:
     st.success(f"**Viable.** It breaks even at **{be:.0f} customers a day** ({cust} expected) and earns back "
                f"the {lakh(inv)} investment in **month {pb}**.")
 
+if not is_base:
+    st.caption("Arrows under each number show the change from the base case (90 customers a day, ₹300 bill, "
+               "32% ingredients, ₹120 rent).")
 k1, k2, k3, k4, k5 = st.columns(5)
 k1.metric("Total investment", lakh(inv, 1), None if is_base else delta(inv, base["investment"], lambda d: f"₹{d / 1e5:.2f} lakh"),
           delta_color="inverse", help="Everything needed to open, including the refundable deposit and a cash reserve.")
